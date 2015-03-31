@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 
 /**
- *	Gestion du serpent
+ *	Gestion d'un serpent
  */
 public class Serpent implements Constantes {
 
