@@ -9,6 +9,7 @@ public class Serpent implements Constantes {
 	private Direction direction;
 	private Direction demande;
 	private boolean estMort;
+	private Case posQueueAnterieur;
 
 	/**
 	 *	Creer un serpent de TAILLE_SERPENT case en position
@@ -30,7 +31,7 @@ public class Serpent implements Constantes {
 		if(peutManger(nourriture)) {
 			mange();
 			nourriture.nouvelleNourriture();
-		} else if(peutAvancer()) {
+		} else if(seMangePas()) {
 			avance();
 		} else {
 			this.estMort = true;
@@ -63,31 +64,53 @@ public class Serpent implements Constantes {
 	 */
 	private Case getNextCase() {
 		Case tete = this.list.getFirst();
+		Case nextCase;
 		switch (this.direction) {
 			case VERS_LE_HAUT:
-				return new Case(tete.getX(), tete.getY() - 1);
+				nextCase = new Case(tete.getX(), tete.getY() - 1);
+				if(nextCase.estValide()) {
+					return nextCase;
+				} else {
+					return new Case(nextCase.getX(), NBRE_LIGNES - 1);
+				}
 			case VERS_LA_DROITE:
-				return new Case(tete.getX() + 1, tete.getY());
+				nextCase = new Case(tete.getX() + 1, tete.getY());
+				if(nextCase.estValide()) {
+					return nextCase;
+				} else {
+					return new Case(0, nextCase.getY());
+				}
 			case VERS_LE_BAS:
-				return new Case(tete.getX(), tete.getY() + 1);
+				nextCase = new Case(tete.getX(), tete.getY() + 1);
+				if(nextCase.estValide()) {
+					return nextCase;
+				} else {
+					return new Case(nextCase.getX(), 0);
+				}
 			case VERS_LA_GAUCHE:
-				return new Case(tete.getX() - 1, tete.getY());
+				nextCase = new Case(tete.getX() - 1, tete.getY());
+				if(nextCase.estValide()) {
+					return nextCase;
+				} else {
+					return new Case(NBRE_COLONNES - 1, nextCase.getY());
+				}
 		}
 		return null;
 	}
 
 	/**
-	 *	Retourne vrai si le serpent peut avancer
+	 *	Retourne vrai si le serpent ne se mange pas
 	 */
-	private boolean peutAvancer() {
+	private boolean seMangePas() {
 		Case nextCase = getNextCase();
-		return nextCase.estValide() && !this.list.contains(nextCase);
+		return !this.list.contains(nextCase);
 	}
 
 	/**
 	 *	Effectue l'action d'avancer le serpent
 	 */
 	private void avance() {
+		posQueueAnterieur = this.list.getLast();
 		this.list.addFirst(getNextCase());
 		this.list.removeLast();
 	}
@@ -112,7 +135,8 @@ public class Serpent implements Constantes {
 	}
 
 	private void mange() {
-		this.list.addFirst(getNextCase());
+		avance();
+		this.list.addLast(posQueueAnterieur);
 	}
 
 	private boolean peutManger(Nourriture nourriture) {
