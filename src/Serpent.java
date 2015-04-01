@@ -9,7 +9,6 @@ public class Serpent implements Constantes {
 	private Direction direction;
 	private Direction demande;
 	private boolean estMort;
-	private Case posQueueAnterieur;
 
 	/**
 	 *	Creer un serpent de TAILLE_SERPENT case en position
@@ -110,7 +109,6 @@ public class Serpent implements Constantes {
 	 *	Effectue l'action d'avancer le serpent
 	 */
 	private void avance() {
-		posQueueAnterieur = this.list.getLast();
 		this.list.addFirst(getNextCase());
 		this.list.removeLast();
 	}
@@ -135,8 +133,7 @@ public class Serpent implements Constantes {
 	}
 
 	private void mange() {
-		avance();
-		this.list.addLast(posQueueAnterieur);
+		this.list.addLast(getNextCase());
 	}
 
 	private boolean peutManger(Nourriture nourriture) {
